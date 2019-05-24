@@ -36,3 +36,14 @@ class BraintreeProvider(BasicProvider):
             form.save()
             raise RedirectNeeded(payment.get_success_url())
         return form
+
+    def capture(self, payment, amount=None):
+        payment.change_status(PaymentStatus.CONFIRMED)
+        return amount
+
+    def release(self, payment):
+        return None
+
+    def refund(self, payment, amount=None):
+        result = braintree.Transaction.refund(payment.transaction_id, amount)
+        return amount
